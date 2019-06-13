@@ -238,6 +238,18 @@ var NRS = (function(NRS, $, undefined) {
 		});
 	};
 
+	NRS.setShufflingNotifications = function() {
+        NRS.sendRequest("getAllShufflings", {},
+            function (response) {
+                if (response.shufflings) {
+                    $('#shuffling_notification_counter').html(String(response.shufflings.length));
+                    $('#shuffling_notification_menu').show();
+				} else {
+                    $('#shuffling_notification_counter').html("0");
+                }
+            }
+		)
+	};
 
 	return NRS;
 }(NRS || {}, jQuery));

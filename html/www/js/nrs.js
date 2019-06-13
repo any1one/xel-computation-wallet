@@ -811,7 +811,7 @@ var NRS = (function(NRS, $, undefined) {
 			"id": "closed_groups"
 		}], function(error, result) {
 			if (result && result.length) {
-				//NRS.setClosedGroups(result[0].contents.split("#"));
+				NRS.setClosedGroups(result[0].contents.split("#"));
 			} else {
 				NRS.storageInsert("data", "id", {
 					id: "closed_groups",
@@ -1350,9 +1350,10 @@ var NRS = (function(NRS, $, undefined) {
                 } else {
                     var message;
                     if (NRS.publicKey == "") {
-                        message = $.t("status_new_account_no_pk_v2", {
+                        message = $.t("status_new_account_no_pk_v3", {
                             "account_id": NRS.escapeRespStr(NRS.accountRS)
                         });
+                        message += NRS.getPassphraseValidationLink(false);
                         if (NRS.downloadingBlockchain) {
                             message += "<br/><br/>" + NRS.blockchainDownloadingMessage();
                         }
@@ -1361,15 +1362,24 @@ var NRS = (function(NRS, $, undefined) {
                             "account_id": NRS.escapeRespStr(NRS.accountRS),
                             "public_key": NRS.escapeRespStr(NRS.publicKey)
                         });
+                        message += NRS.getPassphraseValidationLink(true);
                         if (NRS.downloadingBlockchain) {
                             message += "<br/><br/>" + NRS.blockchainDownloadingMessage();
                         }
-                        
+                        message += "<br/><br/>" + NRS.getFundAccountLink();
                     }
                     $("#dashboard_message").addClass("alert-success").removeClass("alert-danger").html(message).show();
                 }
             } else {
-                $("#dashboard_message").addClass("alert-danger").removeClass("alert-success").html(NRS.accountInfo.errorDescription ? NRS.escapeRespStr(NRS.accountInfo.errorDescription) : $.t("error_unknown")).show();
+                var errorMessage;
+                if (NRS.accountInfo.errorCode == 19) {
+                    errorMessage = $.t("no_open_api_peers");
+                } else {
+                    errorMessage = NRS.accountInfo.errorDescription ? NRS.escapeRespStr(NRS.accountInfo.errorDescription) : $.t("error_unknown");
+                }
+
+
+                $("#dashboard_message").addClass("alert-danger").removeClass("alert-success").html(errorMessage).show();
             }
         } else {
             if (NRS.downloadingBlockchain) {
@@ -1711,7 +1721,7 @@ var NRS = (function(NRS, $, undefined) {
 				});
 			}
 
-            if (!NRS.state.isLightClient && NRS.blocks && NRS.blocks.length > 0 && (NRS.blocks[0].timestamp < (NRS.toEpochTime() - (60*60))) && !NRS.isTestNet) {
+            if (NRS.blocks && NRS.blocks.length > 0 && NRS.baseTargetPercent(NRS.blocks[0]) > 1500 && !NRS.isTestNet) {
                 $.growl($.t("fork_warning_base_target"), {
                     "type": "danger"
                 });

@@ -70,7 +70,7 @@ var NRS = (function (NRS, $) {
         'NOT_FORGING': 'not_forging',
         'UNKNOWN': 'unknown',
         'LAST_KNOWN_BLOCK': { id: "13769421951337852026", height: "0" },
-        'LAST_KNOWN_TESTNET_BLOCK': { id: "13769421951337852026", height: "0" }
+        'LAST_KNOWN_TESTNET_BLOCK': { id: "13769421951337852026", height: "0" },
         'INITIAL_BASE_TARGET': 1537228670,
         'SCHEDULE_PREFIX': "schedule"
     };
@@ -111,7 +111,6 @@ var NRS = (function (NRS, $) {
             NRS.constants.MAX_TAGGED_DATA_DATA_LENGTH = response.maxTaggedDataDataLength;
             NRS.constants.MAX_PRUNABLE_MESSAGE_LENGTH = response.maxPrunableMessageLength;
             NRS.constants.GENESIS = response.genesisAccountId;
-            NRS.constants.GENESIS_RS = converters.convertNumericToRSAccountFormat(response.genesisAccountId);
             NRS.constants.EPOCH_BEGINNING = response.epochBeginning;
             NRS.constants.REQUEST_TYPES = response.requestTypes;
             NRS.constants.API_TAGS = response.apiTags;
@@ -202,10 +201,6 @@ var NRS = (function (NRS, $) {
 
     NRS.getPeerState = function (code) {
         return getKeyByValue(NRS.constants.PEER_STATES, code);
-    };
-
-    NRS.getECBlock = function(isTestNet) {
-        return isTestNet ? NRS.constants.LAST_KNOWN_TESTNET_BLOCK : NRS.constants.LAST_KNOWN_BLOCK;
     };
 
     NRS.isRequireBlockchain = function(requestType) {
