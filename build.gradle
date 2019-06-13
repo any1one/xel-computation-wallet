@@ -34,12 +34,14 @@ dependencies {
     compile 'org.eclipse.jetty:jetty-servlets:9.4.8.v20171121'
     compile 'org.eclipse.jetty.websocket:websocket-api:9.4.8.v20171121'
     compile 'org.eclipse.jetty.websocket:websocket-server:9.4.8.v20171121'
-    compile 'org.apache.tika:tika-core:1.19.1'
-    compile 'org.apache.tika:tika-parsers:1.17'
+    compile 'org.apache.tika:tika-core:1.21'
+    compile 'org.apache.tika:tika-parsers:1.21'
     compile 'javax.servlet:javax.servlet-api:4.0.0'
     compile 'org.bitcoinj:bitcoinj-core:0.14.6'
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
     compile 'com.h2database:h2:1.4.196'
+    compile 'org.apache.commons:commons-lang3:3.9'
+
     testCompile 'junit:junit:4.10'
 }
 

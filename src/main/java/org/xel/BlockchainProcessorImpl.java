@@ -17,7 +17,7 @@
 
 package org.xel;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.xel.crypto.Crypto;
 import org.xel.db.DbIterator;
 import org.xel.db.DerivedDbTable;
@@ -1286,7 +1286,7 @@ final class BlockchainProcessorImpl implements BlockchainProcessor {
 
     @Override
     public void registerComputationalDerivedTable(ComputationalDerivedDbTable table) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("not implemented");
     }
 
     void shutdown() {
