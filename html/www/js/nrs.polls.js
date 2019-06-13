@@ -321,7 +321,7 @@ var NRS = (function(NRS, $, undefined) {
 			$('#create_poll_min_balance').attr('disabled', false);
 		}
 		if ((pollType == 0 && mbType == 1) || pollType == 1) {
-			$('#min_voting_balance_label_unit').html($.t('nxt_capital_letters'));
+			$('#min_voting_balance_label_unit').html(NRS.constants.COIN_SYMBOL);
 			$('#create_poll_min_balance').attr('name', 'minBalanceNXT');
 		}
 	}
@@ -474,7 +474,7 @@ var NRS = (function(NRS, $, undefined) {
                 },
                 "titleSubtitlePadding": 0
             },
-            "barter": {
+            "footer": {
                 "color": "#999999",
                 "fontSize": 10,
                 "font": "open sans",
@@ -793,7 +793,7 @@ var NRS = (function(NRS, $, undefined) {
 			};
 		}
 
-		if (!/^\d+$/.test(data.id) && !/^XEL\-/i.test(data.id)) {
+		if (!NRS.isNumericAccount(data.id) && !NRS.isRsAccount(data.id)) {
 			return {
 				"error": $.t("error_poll_id_invalid")
 			};

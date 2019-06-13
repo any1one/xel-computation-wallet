@@ -65,7 +65,9 @@ var NRS = (function(NRS, $, undefined) {
 
 	NRS.getUnconfirmedTransactions = function(callback) {
 		NRS.sendRequest("getUnconfirmedTransactions", {
-			"account": NRS.account
+			"account": NRS.account,
+            "firstIndex": 0,
+            "lastIndex": NRS.itemsPerPage
 		}, function(response) {
 			if (response.unconfirmedTransactions && response.unconfirmedTransactions.length) {
 				var unconfirmedTransactions = [];
@@ -164,7 +166,7 @@ var NRS = (function(NRS, $, undefined) {
 		}
         NRS.sendRequest("getBlockchainTransactions", {
 			"account": NRS.account,
-			"timestamp": NRS.blocks[0].timestamp + 1,
+			"timestamp": Math.max(NRS.blocks[0].timestamp + 1, 0),
 			"firstIndex": 0,
 			"lastIndex": 0
 		}, function(response) {
@@ -332,14 +334,14 @@ var NRS = (function(NRS, $, undefined) {
 						if (finished) {
 							if (responsePoll.approved) {
 								state = "success";
-								color = "#52bef4";
+								color = "#00a65a";
 							} else {
 								state = "danger";
-								color = "hsl(330, 65%, 55%) !important";
+								color = "#f56954";
 							}
 						} else {
 							state = "warning";
-							color = "hsl(330, 65%, 55%) !important";
+							color = "#f39c12";
 						}
 
 						var $popoverTable = $("<table class='table table-striped'></table>");
@@ -416,12 +418,12 @@ var NRS = (function(NRS, $, undefined) {
 						if (vm == 1) {
 							$popoverTypeTR.find("td:first").html($.t('accounts', 'Accounts') + ":");
 							$popoverTypeTR.find("td:last").html(String(attachment.phasingWhitelist ? attachment.phasingWhitelist.length : ""));
-							votesFormatted = NRS.convertToNXT(responsePoll.result) + " / " + NRS.convertToNXT(attachment.phasingQuorum) + " XEL";
+							votesFormatted = NRS.convertToNXT(responsePoll.result) + " / " + NRS.convertToNXT(attachment.phasingQuorum) + " " + NRS.constants.COIN_SYMBOL;
 							$popoverVotesTR.find("td:last").html(votesFormatted);
 						}
 						if (mbModel == 1) {
 							if (minBalance > 0) {
-								minBalanceFormatted = NRS.convertToNXT(minBalance) + " XEL";
+								minBalanceFormatted = NRS.convertToNXT(minBalance) + " " + NRS.constants.COIN_SYMBOL;
 								$approveBtn.data('minBalanceFormatted', minBalanceFormatted.escapeHTML());
 							}
 						}
@@ -464,7 +466,7 @@ var NRS = (function(NRS, $, undefined) {
 				amount = new BigInteger(t.amountNQT);
 				sign = 1;
 			}
-			feeColor = "color:white;";
+			feeColor = "color:black;";
 		} else {
 			if (t.sender != t.recipient) {
 				if (t.amountNQT != "0") {
@@ -477,14 +479,14 @@ var NRS = (function(NRS, $, undefined) {
 					amount = new BigInteger(t.amountNQT); // send to myself
 				}
 			}
-			feeColor = "color:hsl(330, 65%, 55%) !important;";
+			feeColor = "color:red;";
 		}
 		var formattedAmount = "";
 		if (amount != "") {
 			formattedAmount = NRS.formatAmount(amount, false, false, decimals.amount);
 		}
 		var formattedFee = NRS.formatAmount(fee, false, false, decimals.fee);
-		var amountColor = (sign == 1 ? "color:#cbffb7;" : (sign == -1 ? "color:hsl(330, 65%, 55%) !important;" : "color:ffffff;"));
+		var amountColor = (sign == 1 ? "color:green;" : (sign == -1 ? "color:red;" : "color:black;"));
 		var hasMessage = false;
 
 		if (t.attachment) {

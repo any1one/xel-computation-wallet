@@ -52,7 +52,8 @@ var NRS = (function (NRS, $, undefined) {
         try {
             if (typeof transaction != "object") {
                 NRS.sendRequest("getTransaction", {
-                    "transaction": transaction
+                    "transaction": transaction,
+                    "includePhasingResult": true
                 }, function (response, input) {
                     response.transaction = input.transaction;
                     NRS.processTransactionModalData(response, isModalVisible, sharedKey);
@@ -154,6 +155,10 @@ var NRS = (function (NRS, $, undefined) {
             } else {
                 transactionDetails.height_formatted_html = NRS.getBlockLink(transactionDetails.height);
                 delete transactionDetails.height;
+            }
+            if (transactionDetails.executionHeight !== undefined) {
+                transactionDetails.execution_height_formatted_html = NRS.getBlockLink(transactionDetails.executionHeight);
+                delete transactionDetails.executionHeight;
             }
             $("#transaction_info_modal_transaction").html(NRS.escapeRespStr(transaction.transaction));
 
@@ -560,8 +565,8 @@ var NRS = (function (NRS, $, undefined) {
             "asset_formatted_html": NRS.getTransactionLink(transaction.attachment.asset),
             "asset_name": asset.name,
             "quantity": [transaction.attachment.quantityQNT, asset.decimals],
-            "price_formatted_html": NRS.formatOrderPricePerWholeQNT(transaction.attachment.priceNQT, asset.decimals) + " XEL",
-            "total_formatted_html": NRS.formatAmount(NRS.calculateOrderTotalNQT(transaction.attachment.quantityQNT, transaction.attachment.priceNQT)) + " XEL"
+            "price_formatted_html": NRS.formatOrderPricePerWholeQNT(transaction.attachment.priceNQT, asset.decimals) + " " + NRS.constants.COIN_SYMBOL,
+            "total_formatted_html": NRS.formatAmount(NRS.calculateOrderTotalNQT(transaction.attachment.quantityQNT, transaction.attachment.priceNQT)) + " " + NRS.constants.COIN_SYMBOL
         };
         data["sender"] = transaction.senderRS ? transaction.senderRS : transaction.sender;
         var rows = "";
@@ -600,7 +605,7 @@ var NRS = (function (NRS, $, undefined) {
                 data["trades"] = $.t("no_matching_trade");
             }
             data["quantity_traded"] = [tradeQuantity, asset.decimals];
-            data["total_traded"] = NRS.formatAmount(tradeTotal, false, true) + " XEL";
+            data["total_traded"] = NRS.formatAmount(tradeTotal, false, true) + " " + NRS.constants.COIN_SYMBOL;
         }, { isAsync: false });
 
         var infoTable = $("#transaction_info_table");
@@ -613,7 +618,7 @@ var NRS = (function (NRS, $, undefined) {
     };
 
     NRS.formatCurrencyExchange = function (currency, transaction, type) {
-        var rateUnitsStr = " [ " + currency.code + " / XEL ]";
+        var rateUnitsStr = " [" + NRS.constants.COIN_SYMBOL + " " + $.t("per") + " " + currency.code +"]";
         var data = {
             "type": type == "sell" ? $.t("sell_currency") : $.t("buy_currency"),
             "code": currency.code,
@@ -651,13 +656,13 @@ var NRS = (function (NRS, $, undefined) {
                 data["exchanges"] = $.t("no_matching_exchange_offer");
             }
             data["units_exchanged"] = [exchangedUnits, currency.decimals];
-            data["total_exchanged"] = NRS.formatAmount(exchangedTotal, false, true) + " [XEL]";
+            data["total_exchanged"] = NRS.formatAmount(exchangedTotal, false, true) + " [" + NRS.constants.COIN_SYMBOL + "]";
         }, { isAsync: false });
         return data;
     };
 
     NRS.formatCurrencyOffer = function (currency, transaction) {
-        var rateUnitsStr = " [ " + currency.code + " / XEL ]";
+        var rateUnitsStr = " [" + NRS.constants.COIN_SYMBOL + " " + $.t("per") + " " + currency.code + "]";
         var buyOffer;
         var sellOffer;
         NRS.sendRequest("getOffer", {
@@ -719,7 +724,7 @@ var NRS = (function (NRS, $, undefined) {
                 data["exchanges"] = $.t("no_matching_exchange_request");
             }
             data["units_exchanged"] = [exchangedUnits, currency.decimals];
-            data["total_exchanged"] = NRS.formatAmount(exchangedTotal, false, true) + " [XEL]";
+            data["total_exchanged"] = NRS.formatAmount(exchangedTotal, false, true) + " [" + NRS.constants.COIN_SYMBOL + "]";
         }, { isAsync: false });
         return data;
     };

@@ -71,8 +71,9 @@ var NRS = (function (NRS, $) {
         'UNKNOWN': 'unknown',
         'LAST_KNOWN_BLOCK': { id: "13769421951337852026", height: "0" },
         'LAST_KNOWN_TESTNET_BLOCK': { id: "13769421951337852026", height: "0" }
+        'INITIAL_BASE_TARGET': 1537228670,
+        'SCHEDULE_PREFIX': "schedule"
     };
-
 
     NRS.loadAlgorithmList = function (algorithmSelect, isPhasingHash) {
         var hashAlgorithms;
@@ -86,6 +87,17 @@ var NRS = (function (NRS, $) {
                 algorithmSelect.append($("<option />").val(hashAlgorithms[key]).text(key));
             }
         }
+    };
+
+    NRS.getRsAccountRegex = function(accountPrefix, withoutSeparator) {
+        if (withoutSeparator) {
+            return new RegExp("^" + accountPrefix + "-[A-Z0-9]{17}", "i");
+        }
+        return new RegExp(NRS.constants.ACCOUNT_REGEX_STR, "i");
+    };
+
+    NRS.getNumericAccountRegex = function() {
+        return new RegExp("^\\d+$");
     };
 
     NRS.processConstants = function(response, resolve) {
@@ -108,8 +120,22 @@ var NRS = (function (NRS, $) {
             NRS.constants.DISABLED_APIS = response.disabledAPIs;
             NRS.constants.DISABLED_API_TAGS = response.disabledAPITags;
             NRS.constants.PEER_STATES = response.peerStates;
+            NRS.constants.LAST_KNOWN_BLOCK.id = response.genesisBlockId;
             NRS.loadTransactionTypeConstants(response);
             NRS.constants.PROXY_NOT_FORWARDED_REQUESTS = response.proxyNotForwardedRequests;
+            NRS.constants.COIN_SYMBOL = response.coinSymbol;
+            $(".coin-symbol").html(response.coinSymbol);
+            NRS.constants.ACCOUNT_PREFIX = response.accountPrefix;
+            NRS.constants.PROJECT_NAME = response.projectName;
+            NRS.constants.ACCOUNT_REGEX_STR = "^" + response.accountPrefix + "-[A-Z0-9_]{4}-[A-Z0-9_]{4}-[A-Z0-9_]{4}-[A-Z0-9_]{5}";
+            NRS.constants.ACCOUNT_RS_MATCH = NRS.getRsAccountRegex(response.accountPrefix);
+            NRS.constants.ACCOUNT_NUMERIC_MATCH = NRS.getNumericAccountRegex();
+            NRS.constants.ACCOUNT_MASK_ASTERIX = response.accountPrefix + "-****-****-****-*****";
+            NRS.constants.ACCOUNT_MASK_UNDERSCORE = response.accountPrefix + "-____-____-____-_____";
+            NRS.constants.ACCOUNT_MASK_PREFIX = response.accountPrefix + "-";
+            NRS.constants.GENESIS_RS = NRS.convertNumericToRSAccountFormat(response.genesisAccountId);
+            NRS.constants.INITIAL_BASE_TARGET = parseInt(response.initialBaseTarget);
+            NRS.constants.CURRENCY_TYPES = response.currencyTypes;
             console.log("done loading server constants");
             if (resolve) {
                 resolve();
@@ -235,6 +261,11 @@ var NRS = (function (NRS, $) {
             requestType == "startFundingMonitor";
     };
 
+    NRS.isScheduleRequest = function (requestType) {
+        var keyword = NRS.constants.SCHEDULE_PREFIX;
+        return requestType && requestType.length >= keyword.length && requestType.substring(0, keyword.length) == keyword;
+    };
+
     NRS.getFileUploadConfig = function (requestType, data) {
         var config = {};
         if (requestType == "uploadTaggedData") {
@@ -287,7 +318,7 @@ var NRS = (function (NRS, $) {
     };
 
     return NRS;
-}(Object.assign(NRS || {}, isNode ? global.client : {}), jQuery));
+}(isNode ? client : NRS || {}, jQuery));
 
 if (isNode) {
     module.exports = NRS;

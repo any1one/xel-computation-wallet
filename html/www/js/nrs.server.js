@@ -139,7 +139,7 @@ var NRS = (function (NRS, $, undefined) {
                 callback({
                     "errorCode": 1,
                     "errorDescription": $.t("error_fee_exceeds_max_account_control_fee", {
-                        "maxFee": NRS.convertToNXT(phasingControl.maxFees)
+                        "maxFee": NRS.convertToNXT(phasingControl.maxFees), "symbol": NRS.constants.COIN_SYMBOL
                     })
                 });
                 return;
@@ -179,15 +179,8 @@ var NRS = (function (NRS, $, undefined) {
         var accountId;
         if (requestType == "getAccountId") {
             accountId = NRS.getAccountId(data.secretPhrase);
-
-            var nxtAddress = new NxtAddress();
-            var accountRS = "";
-            if (nxtAddress.set(accountId)) {
-                accountRS = nxtAddress.toString();
-            }
-            callback({
-                "account": accountId,
-                "accountRS": accountRS
+            NRS.sendRequest("getAccount", { account: accountId }, function(response) {
+                callback(response);
             });
             return;
         }
