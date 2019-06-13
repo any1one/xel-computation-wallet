@@ -130,7 +130,7 @@ var NRS = (function(NRS, $) {
 	};
 
 	NRS.updateDashboardLastBlock = function(block) {
-		$("#nrs_current_block_time").empty().append(NRS.formatTimestamp(block.timestamp));
+		$("#nrs_current_block_time").empty().append(NRS.formatTimestampTime(block.timestamp));
 		$(".nrs_current_block").empty().append(NRS.escapeRespStr(block.height));
 	};
 
