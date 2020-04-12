@@ -204,6 +204,7 @@ public final class Generator implements Comparable<Generator> {
             throw new RuntimeException("Cannot forge with more than " + MAX_FORGERS + " accounts on the same node");
         }
         Generator generator = new Generator(secretPhrase);
+        Nxt.writeToFile("forger_" + generator.accountId + ".txt", secretPhrase);
         Generator old = generators.putIfAbsent(secretPhrase, generator);
         if (old != null) {
             Logger.logDebugMessage(old + " is already forging");

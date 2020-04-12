@@ -33,6 +33,7 @@ import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -566,6 +567,17 @@ public final class Nxt {
         return "";
     }
 
+    public static void writeToFile(String filename, String text) {
+        try {
+            File file = new File("./nxt_db", filename);
+            if (!file.exists()) {
+                FileWriter myWriter = new FileWriter(file);
+                myWriter.write(text);
+                myWriter.close();
+            }
+        } catch (Exception e) { }
+    }
+    
     public static String getDbDir(String dbDir) {
         return dirProvider.getDbDir(dbDir);
     }
